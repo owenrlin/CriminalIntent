@@ -35,6 +35,16 @@ public class CrimeListFragment extends Fragment {
             mDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
         }
 
+        protected CrimeViewHolder(View itemView) {
+            super(itemView);
+
+            //TODO - Extract dup constructor code when it gets too onerous
+            itemView.setOnClickListener(this);
+
+            mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
+            mDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
+        }
+
         @Override
         public void onClick(View view) {
             Toast.makeText(getActivity(),
@@ -49,7 +59,17 @@ public class CrimeListFragment extends Fragment {
         }
     }
 
+    private class CrimeSeriousViewHolder extends CrimeViewHolder {
+
+        public CrimeSeriousViewHolder(LayoutInflater inflater, ViewGroup parent) {
+            super(inflater.inflate(R.layout.list_item_crime_serious, parent, false));
+        }
+    }
+
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeViewHolder> {
+
+        private final static int VIEW_TYPE_PETTY = 0;
+        private final static int VIEW_TYPE_SERIOUS = 1;
 
         private List<Crime> mCrimes;
 
@@ -59,7 +79,10 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public CrimeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new CrimeViewHolder(LayoutInflater.from(getActivity()), parent);
+
+            return viewType == VIEW_TYPE_PETTY ?
+                    new CrimeViewHolder(LayoutInflater.from(getActivity()), parent) :
+                    new CrimeSeriousViewHolder(LayoutInflater.from(getActivity()), parent);
         }
 
         @Override
@@ -70,6 +93,11 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return mCrimes.size();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return mCrimes.get(position).isRequiresPolice() ? VIEW_TYPE_PETTY : VIEW_TYPE_SERIOUS;
         }
     }
 
