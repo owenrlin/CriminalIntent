@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ public class CrimeListFragment extends Fragment {
         private Crime mCrime;
         private TextView mTitleTextView;
         private TextView mDateTextView;
+        private ImageView mSolvedImageView;
 
         public CrimeViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_crime, parent, false));
@@ -33,12 +35,12 @@ public class CrimeListFragment extends Fragment {
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
             mDateTextView = (TextView) itemView.findViewById(R.id.crime_date);
+            mSolvedImageView = (ImageView) itemView.findViewById(R.id.crime_solved);
         }
 
         protected CrimeViewHolder(View itemView) {
             super(itemView);
 
-            //TODO - Extract dup constructor code when it gets too onerous
             itemView.setOnClickListener(this);
 
             mTitleTextView = (TextView) itemView.findViewById(R.id.crime_title);
@@ -56,13 +58,7 @@ public class CrimeListFragment extends Fragment {
             mCrime = crime;
             mTitleTextView.setText(crime.getTitle());
             mDateTextView.setText(crime.getDate().toString());
-        }
-    }
-
-    private class CrimeSeriousViewHolder extends CrimeViewHolder {
-
-        public CrimeSeriousViewHolder(LayoutInflater inflater, ViewGroup parent) {
-            super(inflater.inflate(R.layout.list_item_crime_serious, parent, false));
+            mSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -79,10 +75,7 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public CrimeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-            return viewType == VIEW_TYPE_PETTY ?
-                    new CrimeViewHolder(LayoutInflater.from(getActivity()), parent) :
-                    new CrimeSeriousViewHolder(LayoutInflater.from(getActivity()), parent);
+            return new CrimeViewHolder(LayoutInflater.from(getActivity()), parent);
         }
 
         @Override
@@ -93,11 +86,6 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return mCrimes.size();
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            return mCrimes.get(position).isRequiresPolice() ? VIEW_TYPE_PETTY : VIEW_TYPE_SERIOUS;
         }
     }
 
