@@ -102,12 +102,23 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI() {
         CrimeLab crimeLab = CrimeLab.getCrimeLab(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
-        mCrimeAdapter = new CrimeAdapter(crimes);
-        mCrimerRecyclerView.setAdapter(mCrimeAdapter);
+        if(mCrimeAdapter == null) {
+            mCrimeAdapter = new CrimeAdapter(crimes);
+            mCrimerRecyclerView.setAdapter(mCrimeAdapter);
+        }
+        else {
+            mCrimeAdapter.notifyDataSetChanged();
+        }
     }
 
 }
