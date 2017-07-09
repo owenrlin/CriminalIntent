@@ -1,5 +1,7 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -45,7 +47,7 @@ public class CrimeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragmet_crime, container, false);
+        View v = inflater.inflate(R.layout.fragment_crime, container, false);
 
         mTitleField = (EditText)v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
@@ -62,7 +64,7 @@ public class CrimeFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                //Nothing
             }
         });
 
@@ -79,6 +81,14 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        returnResult();
+
         return v;
+    }
+
+    private void returnResult() {
+        Intent result = new Intent();
+        result.putExtras(getActivity().getIntent());
+        getActivity().setResult(Activity.RESULT_OK, result);
     }
 }

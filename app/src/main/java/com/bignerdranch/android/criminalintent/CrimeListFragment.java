@@ -19,12 +19,17 @@ import java.util.List;
 
 public class CrimeListFragment extends Fragment {
 
+    private static final int REQUEST_CRIME_POSITION = 1;
+    private static final String EXTRA_CRIME_POSITION =
+            "com.bignerdranch.android.geoquiz.crime_position";
+
     private RecyclerView mCrimerRecyclerView;
     private CrimeAdapter mCrimeAdapter;
 
     private class CrimeViewHolder extends RecyclerView.ViewHolder
         implements View.OnClickListener {
 
+        private int mCrimePosition;
         private Crime mCrime;
         private TextView mTitleTextView;
         private TextView mDateTextView;
@@ -52,7 +57,8 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View view) {
             Intent intent = CrimeActivity.newIntent(getActivity(), mCrime.getId());
-            startActivity(intent);
+            intent.putExtra(EXTRA_CRIME_POSITION, getCrimePosition());
+            startActivityForResult(intent, REQUEST_CRIME_POSITION);
         }
 
         public void bind(Crime crime) {
@@ -60,6 +66,14 @@ public class CrimeListFragment extends Fragment {
             mTitleTextView.setText(crime.getTitle());
             mDateTextView.setText(DateFormat.format("MMM d, yyyy", crime.getDate()));
             mSolvedImageView.setVisibility(crime.isSolved() ? View.VISIBLE : View.GONE);
+        }
+
+        public int getCrimePosition() {
+            return mCrimePosition;
+        }
+
+        public void setCrimePosition(int crimePosition) {
+            mCrimePosition = crimePosition;
         }
     }
 
@@ -82,6 +96,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onBindViewHolder(CrimeViewHolder holder, int position) {
             holder.bind(mCrimes.get(position));
+            holder.setCrimePosition(position);
         }
 
         @Override
@@ -109,15 +124,24 @@ public class CrimeListFragment extends Fragment {
     }
 
     private void updateUI() {
-        CrimeLab crimeLab = CrimeLab.getCrimeLab(getActivity());
-        List<Crime> crimes = crimeLab.getCrimes();
-
         if(mCrimeAdapter == null) {
+            CrimeLab crimeLab = CrimeLab.getCrimeLab(getActivity());
+            List<Crime> crimes = crimeLab.getCrimes();
             mCrimeAdapter = new CrimeAdapter(crimes);
             mCrimerRecyclerView.setAdapter(mCrimeAdapter);
         }
-        else {
-            mCrimeAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(requestCode == REQUEST_CRIME_POSITION) {
+            int position = data.getIntExtra(EXTRA_CRIME_POSITION, -1);
+
+            if(position > -1) {
+                mCrimeAdapter.notifyItemChanged(position);
+            }
+
         }
     }
 
