@@ -12,6 +12,7 @@ public class CrimeLab {
 
     private static CrimeLab sCrimeLab;
 
+    //Use LinkedHashMap to maintain ordering
     private LinkedHashMap<UUID, Crime> mCrimes;
 
     private CrimeLab(Context context) {
